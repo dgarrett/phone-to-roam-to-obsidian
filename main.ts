@@ -51,7 +51,7 @@ export default class MyPlugin extends Plugin {
 		if (response.ok) {
 			const content = await response.json();
 			console.log(content)
-			await content.forEach(async phoneNote => {
+			for (const phoneNote of content) {
 				console.log(phoneNote['text']);
 				this.addStatusBarItem().setText(phoneNote['text']);
 				const dailyNotes = getAllDailyNotes();
@@ -61,7 +61,7 @@ export default class MyPlugin extends Plugin {
 				if (!dailyNote) {
 					dailyNote = await createDailyNote(date);
 				}
-				const result = await obsidianApp.vault.read(dailyNote);
+				let result = await obsidianApp.vault.read(dailyNote)
 				console.log("Previous Note text:\n" + result);
 				const phoneNoteText = phoneNote['text'] + " #phonetoroam";
 				let newNoteText = result;
@@ -71,7 +71,7 @@ export default class MyPlugin extends Plugin {
 				newNoteText += phoneNoteText;
 				await obsidianApp.vault.modify(dailyNote, newNoteText);
 				new Notice("Added new phonetoroam note to " + dailyNote.path);
-			});
+			}
 		}
 	}
 
