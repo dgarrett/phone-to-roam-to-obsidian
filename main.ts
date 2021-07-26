@@ -1,11 +1,13 @@
-import { App, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { get } from 'https';
+import { App, Modal, moment, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { createDailyNote, getAllDailyNotes, getDailyNote } from 'obsidian-daily-notes-interface';
 
 interface MyPluginSettings {
-	mySetting: string;
+	roam_key: string;
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
+	roam_key: ''
 }
 
 export default class MyPlugin extends Plugin {
@@ -15,10 +17,6 @@ export default class MyPlugin extends Plugin {
 		console.log('loading plugin');
 
 		await this.loadSettings();
-
-		this.addRibbonIcon('dice', 'Sample Plugin', () => {
-			new Notice('This is a notice!');
-		});
 
 		this.addStatusBarItem().setText('Status Bar Text');
 
@@ -42,15 +40,39 @@ export default class MyPlugin extends Plugin {
 
 		this.addSettingTab(new SampleSettingTab(this.app, this));
 
-		this.registerCodeMirror((cm: CodeMirror.Editor) => {
-			console.log('codemirror', cm);
-		});
+		this.registerInterval(window.setInterval(this.getPhoneToRoam.bind(this), 10 * 1000));
+		this.getPhoneToRoam();
+	}
 
-		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			console.log('click', evt);
-		});
-
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+	async getPhoneToRoam() {
+		const obsidianApp = this.app;
+		let url = 'https://www.phonetoroam.com/messages.json?roam_key=' + this.settings.roam_key;
+		const response = await fetch(url);
+		if (response.ok) {
+			const content = await response.json();
+			console.log(content)
+			await content.forEach(async phoneNote => {
+				console.log(phoneNote['text']);
+				this.addStatusBarItem().setText(phoneNote['text']);
+				const dailyNotes = getAllDailyNotes();
+				const date = moment(phoneNote['created_at']);
+				let dailyNote = getDailyNote(date, dailyNotes);
+				console.log("Updating note: " + dailyNote);
+				if (!dailyNote) {
+					dailyNote = await createDailyNote(date);
+				}
+				const result = await obsidianApp.vault.read(dailyNote);
+				console.log("Previous Note text:\n" + result);
+				const phoneNoteText = phoneNote['text'] + " #phonetoroam";
+				let newNoteText = result;
+				if (newNoteText != "") {
+					newNoteText += "\n";
+				}
+				newNoteText += phoneNoteText;
+				await obsidianApp.vault.modify(dailyNote, newNoteText);
+				new Notice("Added new phonetoroam note to " + dailyNote.path);
+			});
+		}
 	}
 
 	onunload() {
@@ -95,17 +117,16 @@ class SampleSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		containerEl.createEl('h2', {text: 'Settings for my awesome plugin.'});
+		containerEl.createEl('h2', {text: 'Phone to Roam to Obsidian Settings'});
 
 		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
+			.setName('roam_key')
+			.setDesc('From https://www.phonetoroam.com')
 			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue('')
+				.setPlaceholder('Enter your roam_key')
+				.setValue(this.plugin.settings.roam_key)
 				.onChange(async (value) => {
-					console.log('Secret: ' + value);
-					this.plugin.settings.mySetting = value;
+					this.plugin.settings.roam_key = value;
 					await this.plugin.saveSettings();
 				}));
 	}
