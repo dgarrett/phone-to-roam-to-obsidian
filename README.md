@@ -1,6 +1,6 @@
 ## Phone to Roam to Obsidian
 
-This is a Phone to Roam (https://phonetoroam.com) client for Obsidian
+This is a Phone to Roam (https://www.phonetoroam.com) client for Obsidian
 (https://obsidian.md).
 
 Every 10 seconds the plugin will fetch new notes from Phone to Roam and append

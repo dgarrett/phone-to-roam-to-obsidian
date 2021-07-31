@@ -101,7 +101,7 @@ class PhoneToRoamSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('roam_key')
-			.setDesc('From phonetoroam.com')
+			.setDesc('From www.phonetoroam.com')
 			.addText(text => text
 				.setPlaceholder('Required')
 				.setValue(this.plugin.settings.roam_key)
