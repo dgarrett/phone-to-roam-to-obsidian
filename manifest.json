@@ -4,7 +4,7 @@
 	"version": "1.0.0",
 	"minAppVersion": "0.9.12",
 	"description": "An Obsidian client for phonetoroam.com",
-	"author": "Dylang Garrett",
+	"author": "Dylan Garrett",
 	"authorUrl": "https://dylan-garrett.com",
 	"isDesktopOnly": false
 }
