@@ -14,27 +14,13 @@ export default class MyPlugin extends Plugin {
 	settings: MyPluginSettings;
 
 	async onload() {
-		console.log('loading plugin');
-
 		await this.loadSettings();
 
-		this.addStatusBarItem().setText('Status Bar Text');
-
 		this.addCommand({
-			id: 'open-sample-modal',
-			name: 'Open Sample Modal',
-			// callback: () => {
-			// 	console.log('Simple Callback');
-			// },
-			checkCallback: (checking: boolean) => {
-				let leaf = this.app.workspace.activeLeaf;
-				if (leaf) {
-					if (!checking) {
-						new SampleModal(this.app).open();
-					}
-					return true;
-				}
-				return false;
+			id: 'sync-phone-to-roam-to-obsidian',
+			name: 'Get new notes',
+			callback: () => {
+				this.getPhoneToRoam();
 			}
 		});
 
@@ -51,19 +37,15 @@ export default class MyPlugin extends Plugin {
 		if (response.ok) {
 			const content = await response.json();
 			content.sort((a: any, b: any) => new Date(a['created_at']).getTime() - new Date(b['created_at']).getTime());
-			console.log(content);
+			// console.log(content);
 			for (const phoneNote of content) {
-				console.log(phoneNote['text']);
-				this.addStatusBarItem().setText(phoneNote['text']);
 				const dailyNotes = getAllDailyNotes();
 				const date = moment(phoneNote['created_at']);
 				let dailyNote = getDailyNote(date, dailyNotes);
-				console.log("Updating note: " + dailyNote.path);
 				if (!dailyNote) {
 					dailyNote = await createDailyNote(date);
 				}
 				let result = await obsidianApp.vault.read(dailyNote)
-				console.log("Previous Note text:\n" + result);
 				const phoneNoteText = phoneNote['text'] + " #phonetoroam";
 				let newNoteText = result;
 				if (newNoteText != "") {
@@ -77,7 +59,6 @@ export default class MyPlugin extends Plugin {
 	}
 
 	onunload() {
-		console.log('unloading plugin');
 	}
 
 	async loadSettings() {
@@ -86,22 +67,6 @@ export default class MyPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-	}
-}
-
-class SampleModal extends Modal {
-	constructor(app: App) {
-		super(app);
-	}
-
-	onOpen() {
-		let {contentEl} = this;
-		contentEl.setText('Woah!');
-	}
-
-	onClose() {
-		let {contentEl} = this;
-		contentEl.empty();
 	}
 }
 
