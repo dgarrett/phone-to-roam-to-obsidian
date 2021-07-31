@@ -3,7 +3,7 @@
 	"name": "Phone to Roam to Obsidian",
 	"version": "1.0.0",
 	"minAppVersion": "0.9.12",
-	"description": "This is a plugin to use phonetoroam.com with Obsidian",
+	"description": "An Obsidian client for phonetoroam.com",
 	"author": "Dylang Garrett",
 	"authorUrl": "https://dylan-garrett.com",
 	"isDesktopOnly": false

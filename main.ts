@@ -2,20 +2,20 @@ import { get } from 'https';
 import { App, Modal, moment, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import { createDailyNote, getAllDailyNotes, getDailyNote } from 'obsidian-daily-notes-interface';
 
-interface MyPluginSettings {
+interface PluginSettings {
 	roam_key: string;
 	auto_append: string;
 	use_raw_text: boolean;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
+const DEFAULT_SETTINGS: PluginSettings = {
 	roam_key: '',
 	auto_append: '#phonetoroam',
 	use_raw_text: false
 }
 
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+export default class PhoneToRoamPlugin extends Plugin {
+	settings: PluginSettings;
 
 	async onload() {
 		await this.loadSettings();
@@ -28,7 +28,7 @@ export default class MyPlugin extends Plugin {
 			}
 		});
 
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.addSettingTab(new PhoneToRoamSettingTab(this.app, this));
 
 		this.registerInterval(window.setInterval(this.getPhoneToRoam.bind(this), 10 * 1000));
 		this.getPhoneToRoam();
@@ -84,10 +84,10 @@ export default class MyPlugin extends Plugin {
 	}
 }
 
-class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+class PhoneToRoamSettingTab extends PluginSettingTab {
+	plugin: PhoneToRoamPlugin;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: PhoneToRoamPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
