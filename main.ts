@@ -103,7 +103,7 @@ class PhoneToRoamSettingTab extends PluginSettingTab {
 			.setName('roam_key')
 			.setDesc('From phonetoroam.com')
 			.addText(text => text
-				.setPlaceholder('Enter your roam_key')
+				.setPlaceholder('Required')
 				.setValue(this.plugin.settings.roam_key)
 				.onChange(async (value) => {
 					this.plugin.settings.roam_key = value;
@@ -114,7 +114,7 @@ class PhoneToRoamSettingTab extends PluginSettingTab {
 			.setName('Auto append')
 			.setDesc('Hashtags or other text to append to every note')
 			.addText(text => text
-				.setPlaceholder('Recommended: #phonetoroam')
+				.setPlaceholder('E.g. #phonetoroam')
 				.setValue(this.plugin.settings.auto_append)
 				.onChange(async (value) => {
 					this.plugin.settings.auto_append = value;
