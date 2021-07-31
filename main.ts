@@ -4,10 +4,12 @@ import { createDailyNote, getAllDailyNotes, getDailyNote } from 'obsidian-daily-
 
 interface MyPluginSettings {
 	roam_key: string;
+	auto_append: string;
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
-	roam_key: ''
+	roam_key: '',
+	auto_append: '#phonetoroam'
 }
 
 export default class MyPlugin extends Plugin {
@@ -31,13 +33,19 @@ export default class MyPlugin extends Plugin {
 	}
 
 	async getPhoneToRoam() {
+		if (this.settings.roam_key.trim() === '') {
+			return;
+		}
+
 		const obsidianApp = this.app;
 		let url = 'https://www.phonetoroam.com/messages.json?roam_key=' + this.settings.roam_key;
 		const response = await fetch(url);
 		if (response.ok) {
 			const content = await response.json();
+
+			// Sort by created_at since the API sorts by updated_at
 			content.sort((a: any, b: any) => new Date(a['created_at']).getTime() - new Date(b['created_at']).getTime());
-			// console.log(content);
+
 			for (const phoneNote of content) {
 				const dailyNotes = getAllDailyNotes();
 				const date = moment(phoneNote['created_at']);
@@ -46,14 +54,17 @@ export default class MyPlugin extends Plugin {
 					dailyNote = await createDailyNote(date);
 				}
 				let result = await obsidianApp.vault.read(dailyNote)
-				const phoneNoteText = phoneNote['text'] + " #phonetoroam";
+
+				const phoneNoteText = phoneNote['text'] + ' ' + this.settings.auto_append;
 				let newNoteText = result;
-				if (newNoteText != "") {
-					newNoteText += "\n";
+				if (newNoteText != '') {
+					newNoteText += '\n';
 				}
 				newNoteText += phoneNoteText;
+
 				await obsidianApp.vault.modify(dailyNote, newNoteText);
-				new Notice("Added new phonetoroam note to " + dailyNote.path);
+
+				new Notice('Added new phonetoroam note to ' + dailyNote.path);
 			}
 		}
 	}
@@ -87,12 +98,22 @@ class SampleSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('roam_key')
-			.setDesc('From https://www.phonetoroam.com')
+			.setDesc('From phonetoroam.com')
 			.addText(text => text
 				.setPlaceholder('Enter your roam_key')
 				.setValue(this.plugin.settings.roam_key)
 				.onChange(async (value) => {
 					this.plugin.settings.roam_key = value;
+					await this.plugin.saveSettings();
+				}));
+		new Setting(containerEl)
+			.setName('Auto append')
+			.setDesc('Hashtags or other text to append to every note')
+			.addText(text => text
+				.setPlaceholder('Recommended: #phonetoroam')
+				.setValue(this.plugin.settings.auto_append)
+				.onChange(async (value) => {
+					this.plugin.settings.auto_append = value;
 					await this.plugin.saveSettings();
 				}));
 	}
