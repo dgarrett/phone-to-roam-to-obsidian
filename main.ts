@@ -58,7 +58,7 @@ export default class PhoneToRoamPlugin extends Plugin {
 				let result = await obsidianApp.vault.read(dailyNote)
 
 				const textProp = this.settings.use_raw_text ? 'body' : 'text';
-				const phoneNoteText = phoneNote[textProp] + ' ' + this.settings.auto_append;
+				const phoneNoteText = phoneNote[textProp] + (this.settings.auto_append ? ' ' + this.settings.auto_append : '');
 				let newNoteText = result;
 				if (newNoteText != '') {
 					newNoteText += '\n';
