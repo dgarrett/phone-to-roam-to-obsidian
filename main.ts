@@ -1,5 +1,4 @@
-import { get } from 'https';
-import { App, Modal, moment, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, moment, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import { createDailyNote, getAllDailyNotes, getDailyNote } from 'obsidian-daily-notes-interface';
 
 interface PluginSettings {
@@ -42,6 +41,7 @@ export default class PhoneToRoamPlugin extends Plugin {
 		const obsidianApp = this.app;
 		let url = 'https://www.phonetoroam.com/messages.json?roam_key=' + this.settings.roam_key;
 		const response = await fetch(url);
+
 		if (response.ok) {
 			const content = await response.json();
 
@@ -55,11 +55,11 @@ export default class PhoneToRoamPlugin extends Plugin {
 				if (!dailyNote) {
 					dailyNote = await createDailyNote(date);
 				}
-				let result = await obsidianApp.vault.read(dailyNote)
+				const prevNoteText = await obsidianApp.vault.read(dailyNote)
 
 				const textProp = this.settings.use_raw_text ? 'body' : 'text';
 				const phoneNoteText = phoneNote[textProp] + (this.settings.auto_append ? ' ' + this.settings.auto_append : '');
-				let newNoteText = result;
+				let newNoteText = prevNoteText;
 				if (newNoteText != '') {
 					newNoteText += '\n';
 				}
