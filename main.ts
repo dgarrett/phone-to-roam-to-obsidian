@@ -50,14 +50,15 @@ export default class MyPlugin extends Plugin {
 		const response = await fetch(url);
 		if (response.ok) {
 			const content = await response.json();
-			console.log(content)
+			content.sort((a: any, b: any) => new Date(a['created_at']).getTime() - new Date(b['created_at']).getTime());
+			console.log(content);
 			for (const phoneNote of content) {
 				console.log(phoneNote['text']);
 				this.addStatusBarItem().setText(phoneNote['text']);
 				const dailyNotes = getAllDailyNotes();
 				const date = moment(phoneNote['created_at']);
 				let dailyNote = getDailyNote(date, dailyNotes);
-				console.log("Updating note: " + dailyNote);
+				console.log("Updating note: " + dailyNote.path);
 				if (!dailyNote) {
 					dailyNote = await createDailyNote(date);
 				}
