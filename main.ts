@@ -5,11 +5,13 @@ import { createDailyNote, getAllDailyNotes, getDailyNote } from 'obsidian-daily-
 interface MyPluginSettings {
 	roam_key: string;
 	auto_append: string;
+	use_raw_text: boolean;
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
 	roam_key: '',
-	auto_append: '#phonetoroam'
+	auto_append: '#phonetoroam',
+	use_raw_text: false
 }
 
 export default class MyPlugin extends Plugin {
@@ -55,7 +57,8 @@ export default class MyPlugin extends Plugin {
 				}
 				let result = await obsidianApp.vault.read(dailyNote)
 
-				const phoneNoteText = phoneNote['text'] + ' ' + this.settings.auto_append;
+				const textProp = this.settings.use_raw_text ? 'body' : 'text';
+				const phoneNoteText = phoneNote[textProp] + ' ' + this.settings.auto_append;
 				let newNoteText = result;
 				if (newNoteText != '') {
 					newNoteText += '\n';
@@ -64,7 +67,7 @@ export default class MyPlugin extends Plugin {
 
 				await obsidianApp.vault.modify(dailyNote, newNoteText);
 
-				new Notice('Added new phonetoroam note to ' + dailyNote.path);
+				new Notice('Added new Phone to Roam note to ' + dailyNote.path);
 			}
 		}
 	}
@@ -106,6 +109,7 @@ class SampleSettingTab extends PluginSettingTab {
 					this.plugin.settings.roam_key = value;
 					await this.plugin.saveSettings();
 				}));
+
 		new Setting(containerEl)
 			.setName('Auto append')
 			.setDesc('Hashtags or other text to append to every note')
@@ -114,6 +118,16 @@ class SampleSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.auto_append)
 				.onChange(async (value) => {
 					this.plugin.settings.auto_append = value;
+					await this.plugin.saveSettings();
+				}));
+
+		new Setting(containerEl)
+			.setName('Get raw text')
+			.setDesc('Ignore Phone to Roam\'s parsed dates, etc')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.use_raw_text)
+				.onChange(async (value) => {
+					this.plugin.settings.use_raw_text = value;
 					await this.plugin.saveSettings();
 				}));
 	}
