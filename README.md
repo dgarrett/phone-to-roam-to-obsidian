@@ -7,9 +7,6 @@ software via SMS, Telegram, email, and a few other integrations.
 The plugin will periodically fetch new notes from Phone to Roam and append them
 to the Daily Note of the day that the message was sent.
 
-Also adds a "Phone to Roam to Obsidian: Get new notes" command to force checking
-for new notes immediately.
-
 ## Configuration
 
 ### roam_key
