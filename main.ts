@@ -19,17 +19,9 @@ export default class PhoneToRoamPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		this.addCommand({
-			id: 'sync-phone-to-roam-to-obsidian',
-			name: 'Get new notes',
-			callback: () => {
-				this.getPhoneToRoam();
-			}
-		});
-
 		this.addSettingTab(new PhoneToRoamSettingTab(this.app, this));
 
-		this.registerInterval(window.setInterval(this.getPhoneToRoam.bind(this), 10 * 1000));
+		this.registerInterval(window.setInterval(this.getPhoneToRoam.bind(this), 60 * 1000));
 		this.getPhoneToRoam();
 	}
 

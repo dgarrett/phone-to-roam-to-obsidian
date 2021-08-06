@@ -1,7 +1,7 @@
 {
 	"id": "phone-to-roam-to-obsidian",
 	"name": "Phone to Roam to Obsidian",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"minAppVersion": "0.9.12",
 	"description": "An Obsidian client for phonetoroam.com",
 	"author": "Dylan Garrett",
