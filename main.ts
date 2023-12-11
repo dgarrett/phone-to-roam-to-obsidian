@@ -1,4 +1,4 @@
-import { App, moment, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, moment, Notice, Plugin, PluginSettingTab, request, Setting } from 'obsidian';
 import { createDailyNote, getAllDailyNotes, getDailyNote } from 'obsidian-daily-notes-interface';
 
 interface PluginSettings {
@@ -31,7 +31,7 @@ export default class PhoneToRoamPlugin extends Plugin {
 		}
 
 		const obsidianApp = this.app;
-		let url = 'https://www.phonetoroam.com/messages.json?roam_key=' + this.settings.roam_key;
+		let url = 'https://app.phonetonote.com/messages.json?roam_key=' + this.settings.roam_key;
 		const response = await fetch(url);
 
 		if (response.ok) {
@@ -60,6 +60,18 @@ export default class PhoneToRoamPlugin extends Plugin {
 				await obsidianApp.vault.modify(dailyNote, newNoteText);
 
 				new Notice('Added new Phone to Roam note to ' + dailyNote.path);
+
+				// Mark as synced
+				const messageUrl = 'https://app.phonetonote.com/feed/ptn-' + phoneNote.id + '.json';
+				const response = await request({
+					url: messageUrl, method: 'PATCH', body: JSON.stringify({
+						roam_key: this.settings.roam_key,
+						status: 'synced'
+					}),
+					headers: {
+						"Content-type": "application/json; charset=UTF-8"
+					}
+				});
 			}
 		}
 	}
@@ -85,11 +97,11 @@ class PhoneToRoamSettingTab extends PluginSettingTab {
 	}
 
 	display(): void {
-		let {containerEl} = this;
+		let { containerEl } = this;
 
 		containerEl.empty();
 
-		containerEl.createEl('h2', {text: 'Phone to Roam to Obsidian Settings'});
+		containerEl.createEl('h2', { text: 'Phone to Roam to Obsidian Settings' });
 
 		new Setting(containerEl)
 			.setName('roam_key')
