@@ -9,7 +9,7 @@ interface PluginSettings {
 
 const DEFAULT_SETTINGS: PluginSettings = {
 	roam_key: '',
-	auto_append: '#phonetoroam',
+	auto_append: '#phonetonote',
 	use_raw_text: false
 }
 
@@ -59,7 +59,7 @@ export default class PhoneToRoamPlugin extends Plugin {
 
 				await obsidianApp.vault.modify(dailyNote, newNoteText);
 
-				new Notice('Added new Phone to Roam note to ' + dailyNote.path);
+				new Notice('Added new Phone to Note note to ' + dailyNote.path);
 
 				// Mark as synced
 				const messageUrl = 'https://app.phonetonote.com/feed/ptn-' + phoneNote.id + '.json';
@@ -101,11 +101,11 @@ class PhoneToRoamSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		containerEl.createEl('h2', { text: 'Phone to Roam to Obsidian Settings' });
+		containerEl.createEl('h2', { text: 'Phone to Note to Obsidian Settings' });
 
 		new Setting(containerEl)
-			.setName('roam_key')
-			.setDesc('From www.phonetoroam.com')
+			.setName('ptn_key')
+			.setDesc('From phonetonote.com')
 			.addText(text => text
 				.setPlaceholder('Required')
 				.setValue(this.plugin.settings.roam_key)
@@ -118,7 +118,7 @@ class PhoneToRoamSettingTab extends PluginSettingTab {
 			.setName('Auto append')
 			.setDesc('Hashtags or other text to append to every note')
 			.addText(text => text
-				.setPlaceholder('E.g. #phonetoroam')
+				.setPlaceholder('E.g. #phonetonote')
 				.setValue(this.plugin.settings.auto_append)
 				.onChange(async (value) => {
 					this.plugin.settings.auto_append = value;
@@ -127,7 +127,7 @@ class PhoneToRoamSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Get raw text')
-			.setDesc('Ignore Phone to Roam\'s parsed dates, etc')
+			.setDesc('Ignore Phone to Note\'s parsed dates, etc')
 			.addToggle(toggle => toggle
 				.setValue(this.plugin.settings.use_raw_text)
 				.onChange(async (value) => {
