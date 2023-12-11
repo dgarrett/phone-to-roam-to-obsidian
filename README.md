@@ -1,8 +1,9 @@
 ## Phone to Note to Obsidian
 
-This is a Phone to Note (https://phonetonote.com) client for Obsidian
-(https://obsidian.md). Phone to Note allows sending notes to your note-keeping
-software via SMS, Telegram, email, and a few other integrations.
+This is a Phone to Note (https://phonetonote.com, previously
+https://phonetoroam.com) client for Obsidian (https://obsidian.md). Phone to
+Note allows sending notes to your note-keeping software via SMS, Telegram,
+email, and a few other integrations.
 
 The plugin will periodically (one per minute) fetch new notes from Phone to Note
 and append them to the Daily Note of the day that the message was sent.

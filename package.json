@@ -1,7 +1,7 @@
 {
   "name": "phone-to-roam-to-obsidian",
   "version": "1.0.0",
-  "description": "An unofficial Obsidian client for phonetonote.com",
+  "description": "An unofficial Obsidian client for phonetonote.com (previously phonetoroam.com)",
   "main": "main.js",
   "scripts": {
     "dev": "rollup --config rollup.config.js -w",
